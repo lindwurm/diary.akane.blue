@@ -6,6 +6,7 @@ backend:
 publish_mode: editorial_workflow
 
 media_folder: source/images/
+public_folder: /images/
 
 collections:
   - name: "blog" # Used in routes, e.g., /admin/collections/blog
