@@ -2,7 +2,7 @@
 title: はじめまして
 date: 2017-08-13T19:04:00.000Z
 tags: hexo
-thumbnail: /source/images/deploying-hexo-with-netlify.png
+thumbnail: /images/deploying-hexo-with-netlify.png
 ---
 [1年半くらい前](http://dev.maud.io/entry/2016/03/15/hatenablog) に様々なブログプラットフォームを試した末 [はてなブログPro](http://hatenablog.com/guide/pro) に登録する選択をしたけれど、やっぱり静的サイトジェネレータを使ったブログも書きたくなったので初投稿です。
 
