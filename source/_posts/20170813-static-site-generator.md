@@ -13,12 +13,14 @@ thumbnail: /source/images/deploying-hexo-with-netlify.png
 ### 同じタイトルの記事を書けなかったり、大量の .md が散らばりそうで厳しい
 
 * よく見たら `_config.yml` でファイル名の規則変えれるようになってて、記事名に影響しないように日付ベースでファイル名つけれるっぽい。
-* この記事の例で言えば、以下のようにしとけば `/source/_posts/`[`20170813-static-site-generator.md`](http://20170813-static-site-generator.md) にしといても [https://diary.akane.blue/2017/08/13/static-site-generator](https://diary.akane.blue/2017/08/13/static-site-generator) みたいな感じでアクセスできますね
+* この記事の例で言えば、以下のようにしとけば `/source/_posts/20170813-static-site-generator.md` にしといても [https://diary.akane.blue/2017/08/13/static-site-generator](https://diary.akane.blue/2017/08/13/static-site-generator) みたいな感じでアクセスできますね
 
-  url: [https://diary.akane.blue](https://diary.akane.blue)
-  root: /
-  permalink: :year/:month/:day/:title/
-  new_post_name: :year:month:day-:[title.md](http://title.md)
+```
+url: https://diary.akane.blue
+root: /
+permalink: :year/:month/:day/:title/
+new_post_name: :year:month:day-:title.md
+```
 
 ### 生成物でGitHubが無駄に緑化されるのつらい
 
