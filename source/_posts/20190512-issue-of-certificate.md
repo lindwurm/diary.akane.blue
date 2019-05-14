@@ -3,7 +3,7 @@ title: SSL/TLSサーバ証明書の期限切れについて
 date: 2019-05-12 21:31:31
 ---
 
-2019-05-12 4時頃から14時過ぎ（JST）にかけての約10時間、 mstdn.maud.io が使用していたSSL/TLSサーバ証明書（以下、「SSL証明書」）の期限が切れたものになっており、正常にアクセスできない状態にありました。現在、問題は解消しています。
+2019-05-12 4時頃から14時過ぎ（JST）にかけての約10時間、 mstdn.maud.io が使用していたSSL/TLSサーバ証明書（以下、「SSL証明書」）の有効期限が切れていたため、正常にアクセスできない状態にありました。現在、問題は解消しています。
 
 <!-- more -->
 
@@ -38,6 +38,7 @@ certbot renew --dns-cloudflare --dns-cloudflare-credentials /path/to/cloudflare.
 ```
 
 - ドキュメントは [certbot-dns-cloudflare](https://certbot-dns-cloudflare.readthedocs.io/en/stable/) にあって、Cloudflareのログイン情報（メールアドレスとアクセストークン）を書いて読ませると次回以降は普通に `certbot renew` だけでよい。今回は既に発行された証明書があるので止められるんですが、`--force-renewal` でそれを無視して再発行します。
+- `--dry-run` オプションをつけて問題がないことを確認できたら、オプションは外して実際に発行します。
 - 発行できたら `nginx -s reload` でおわり。
 
 ### 再発防止策
