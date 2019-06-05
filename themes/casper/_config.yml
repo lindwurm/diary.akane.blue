@@ -1,0 +1,70 @@
+# Config
+rss: /atom.xml
+favicon: https://mstdn.maud.io/favicon.ico
+blog_logo: /images/akane_icon.png
+header_image: /images/diary_header.png
+bio: mstdn.maud.io の運用日誌です
+post_toc: true
+
+# Keywords
+keywords: Mastodon, mstdn.maud.io, 障害情報
+
+# Menu
+menu:
+  HOME: /
+  ABOUT: /about
+  ARCHIVES: /archives
+  FEED: /atom.xml
+  # you can add here
+
+# author
+author_image: https://avatars0.githubusercontent.com/u/1874549?s=460&v=4
+author_bio: 
+author_location: Tokyo, JP
+
+# Social Links
+social:
+  # You only can use that I have added, I will keep adding
+
+# Footer Links
+footer_text: 
+
+# Widget
+widgets:
+  recent_posts: true
+  category: false
+  tagcloud: true
+  # This is a simple theme, I think 3 is enough.
+
+# Post page fload header
+floadheader: true
+
+# Gallery
+# https://github.com/sachinchoolur/lightgallery.js
+lightgallery: false
+
+# LazyLoad
+# home page has enabled, this value is to post page
+# https://github.com/dinbror/blazy
+lazyload: false
+
+# Local Search
+local_search: false
+
+# Comment
+# https://valine.js.org
+comment: false
+
+# PWA
+# you need create a manifest.json file in hexo's source folder
+manifest: false
+service_workers: false
+
+navColor: '3c484e'
+
+# Baidu Push
+baidu: false
+
+# Google Analytics
+googleAnalytics: false
+GA_TRACKING_ID:

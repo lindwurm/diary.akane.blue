@@ -1,6 +1,10 @@
 ﻿---
 title: サーバのディスクサイズを拡張しました
 date: 2018-01-16 20:16:00
+tags:
+- 障害情報
+- メンテナンス
+cover_img: /images/disk-clone.png
 ---
 
 タイトル通りで、 mstdn.maud.io のディスクサイズを250GBから500GBに拡張しました。
