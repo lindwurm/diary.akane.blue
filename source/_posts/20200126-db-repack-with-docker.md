@@ -1,5 +1,5 @@
 ---
-title: db_repack を活用してMastodonのDB肥大化を解消する (Docker編)
+title: pg_repack を活用してMastodonのDB肥大化を解消する (Docker編)
 date: 2020-01-26 04:50:00
 tags:
 - メンテナンス
