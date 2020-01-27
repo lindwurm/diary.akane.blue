@@ -73,7 +73,7 @@
 	
 	{{ css('css/allinonecss.min') }}
 	
-    <link href="https://maud.io/css/koruri.css" rel="stylesheet">
+	<link href="https://maud.io/css/koruri.css" rel="stylesheet">
     <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
 
 	{% if theme.googleAnalytics %}
@@ -86,5 +86,5 @@
 	</script>
 	{% endif %}
 	
-	{% include "public/json-ld.swig" %}
+	{# {% include "public/json-ld.swig" %} #}
 </head>
