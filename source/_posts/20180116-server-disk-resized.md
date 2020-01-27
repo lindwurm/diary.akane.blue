@@ -5,6 +5,7 @@ tags:
 - 障害情報
 - メンテナンス
 cover_img: /images/disk-clone.png
+summary: mstdn.maud.io のディスクサイズを 250GB から 500GB に拡張しました。
 ---
 
 タイトル通りで、 mstdn.maud.io のディスクサイズを250GBから500GBに拡張しました。

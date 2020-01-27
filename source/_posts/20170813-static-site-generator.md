@@ -4,7 +4,9 @@ date: 2017-08-13T19:04:00.000Z
 tags:
 - その他
 cover_img: /images/deploying-hexo-with-netlify.png
+summary: やっぱり静的サイトジェネレータでブログを書きたくなりました。
 ---
+
 [1年半くらい前](http://dev.maud.io/entry/2016/03/15/hatenablog) に様々なブログプラットフォームを試した末 [はてなブログPro](http://hatenablog.com/guide/pro) に登録する選択をしたけれど、やっぱり静的サイトジェネレータを使ったブログも書きたくなったので初投稿です。
 
 [Hexo](https://hexo.io/) を使うのは1年半振りということになりますね。[Jekyll](https://jekyllrb.com/) や [Hugo](https://gohugo.io/)、[Gatsby](https://www.gatsbyjs.org/) とかを差し置いてこいつなのは、単にちゃんと使っていた時期があったのと、Material Designっぽいテーマで良さげなのがあったから程度です。
