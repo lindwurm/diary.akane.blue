@@ -33,7 +33,7 @@ summary: アップデートの所要時間短縮を図りました
 
 やるなら [akane-blue/mastodon](https://github.com/akane-blue/mastodon) にpushされたら自動でビルドして Docker Hub に上げてくれると便利ですよね。今なら [GitHub Actions](https://github.co.jp/features/actions) を使うのが簡単そうなので試してみました。
 
-以下をリポジトリの `.github/workflows/push_docker_image.yml` とか
+以下をリポジトリに `.github/workflows/push_docker_image.yml` みたいな名前で作ります。
 
 ```yaml
 name: Push our docker image
