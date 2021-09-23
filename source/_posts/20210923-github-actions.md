@@ -1,5 +1,5 @@
 ---
-title: GitHub Actionsでdocker buildを自動化する
+title: GitHub ActionsでMastodonのdocker buildを自動化する
 date: 2021-09-23 22:40:00
 tags:
 - メンテナンス
