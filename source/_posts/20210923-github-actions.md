@@ -103,3 +103,97 @@ secret | 中身
 　 　└ **dump.rdb**  
 
 `public/system/` 以下もメディアを外部に置いていれば特に増えないはず（まだ空）なので、すごくスッキリしましたね！
+
+## 追記: 便利にする
+
+- よく考えたらプルリク来たときも固定のタグに上がってくるの良くないし、そもそも使わない気がした
+- 機能追加や検証時に `hota/testing/fix-featurename` みたいなブランチ切るのでそういうのもビルドしてタグ分けたい
+
+という気持ちになったので、[ちょこちょこ](https://github.com/akane-blue/mastodon/commit/2676e89578f63d8dc5725c0c8375aa15b8cb0b71)と[書き直しました](https://github.com/akane-blue/mastodon/commit/923038f554ce6987d977003f38062c07be07ec0b)。
+
+結果がこうで
+
+```yaml
+name: Push our docker image
+on:
+  push:
+    branches:
+      - hota/**
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  push_to_hub:
+    name: Push Docker image to Docker Registry
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Login to Docker Registry
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+      -
+        name: Checkout akane-blue/mastodon
+        uses: actions/checkout@v2
+        with:
+          repository: akane-blue/mastodon
+          path: mastodon
+      -
+        name: Get latest branch name
+        id: set_tag
+        run: |
+          cd mastodon
+          CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+          DOCKER_TAG="$(echo ${CURRENT_BRANCH} | sed 's/hota\///g' | sed 's/testing\///g' | sed 's/-/_/g')"
+          echo "::set-output name=docker_tag::${DOCKER_TAG}"
+      -
+        name: Build and push to Docker Registry
+        uses: docker/build-push-action@v2
+        with:
+          context: mastodon
+          push: true
+          tags: ${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_REPO }}:${{steps.set_tag.outputs.docker_tag}}
+```
+
+- `hota/**` ブランチがpushされたときをトリガーとして
+  - `hota/master` のほかに前述の `hota/testing/*` があるので
+- ブランチ名を適当に切り出してタグ名を決める
+
+ようになりました。
+
+### 教訓
+
+ブランチ名を取るときのまあまあアホポイント[みて](https://github.com/akane-blue/mastodon/commit/923038f554ce6987d977003f38062c07be07ec0b)…
+
+```diff
+        run: |
+          cd mastodon
+-          LATEST_BRANCH="$(git branch --sort=-committerdate | sed -n 1p | sed 's/* //g')"
+-          git switch ${LATEST_BRANCH}
++          CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+```
+
+- `git branch` だと `* hota/master` みたいになるので `* ` を取り除こうとした
+  - 1行目だけ切り出してるから当然のことで、実際こうだし…
+
+```
+$ git branch --sort=committerdate
+
+* hota/master
+  hota/testing/fix-hogehoge
+  hota/testing/add-fugafuga
+```
+
+- `actions/checkout@v2` 、そもそもトリガーになったブランチをcheckoutするので `git switch` する必要なかった
+- つまり現在のブランチ名を取ってくるだけでよかったので `git rev-parse` 使えば一発
+
+## 参考
+
+- [GitHub Actionsのワークフロー構文 - GitHub Docs](https://docs.github.com/ja/actions/reference/workflow-syntax-for-github-actions)
+- [ワークフローをトリガーするイベント - GitHub Docs](https://docs.github.com/ja/actions/reference/events-that-trigger-workflows)
+- [Dockerイメージの公開 - GitHub Docs](https://docs.github.com/ja/actions/guides/publishing-docker-images)
+- [GitHub Actions を使って docker build し Docker Hub に push すると、速くて良い | tbsmcd.net](https://tbsmcd.net/post/github-docker-build-and-push/)
