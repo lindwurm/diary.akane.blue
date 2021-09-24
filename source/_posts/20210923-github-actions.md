@@ -147,8 +147,7 @@ jobs:
         id: set_tag
         run: |
           cd mastodon
-          CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-          DOCKER_TAG="$(echo ${CURRENT_BRANCH} | sed 's/hota\///g' | sed 's/testing\///g' | sed 's/-/_/g')"
+          DOCKER_TAG="$(git rev-parse --abbrev-ref HEAD | sed 's/hota\///g' | sed 's/testing\///g' | sed 's/-/_/g')"
           echo "::set-output name=docker_tag::${DOCKER_TAG}"
       -
         name: Build and push to Docker Registry
@@ -167,14 +166,15 @@ jobs:
 
 ### 教訓
 
-ブランチ名を取るときのまあまあアホポイント[みて](https://github.com/akane-blue/mastodon/commit/923038f554ce6987d977003f38062c07be07ec0b)…
+ブランチ名を取るときのまあまあアホポイントみて…
 
 ```diff
-        run: |
-          cd mastodon
--          LATEST_BRANCH="$(git branch --sort=-committerdate | sed -n 1p | sed 's/* //g')"
--          git switch ${LATEST_BRANCH}
-+          CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+  run: |
+    cd mastodon
+-   CURRENT_BRANCH="$(git branch --sort=-committerdate | sed -n 1p | sed 's/* //g')"
++   CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+-   git switch ${CURRENT_BRANCH}
+    DOCKER_TAG="$(echo ${CURRENT_BRANCH} | sed 's/hota\///g' | sed 's/testing\///g' | sed 's/-/_/g')"
 ```
 
 - `git branch` だと `* hota/master` みたいになるので `* ` を取り除こうとした
@@ -190,6 +190,18 @@ $ git branch --sort=committerdate
 
 - `actions/checkout@v2` 、そもそもトリガーになったブランチをcheckoutするので `git switch` する必要なかった
 - つまり現在のブランチ名を取ってくるだけでよかったので `git rev-parse` 使えば一発
+
+### 気づき
+
+**書いてて思い出したけどじゃあもう `CURRENT_BRANCH` 自体要らなくない？？？**
+
+```diff
+-   CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+-   DOCKER_TAG="$(echo ${CURRENT_BRANCH} | sed 's/hota\///g' | sed 's/testing\///g' | sed 's/-/_/g')"
++   DOCKER_TAG="$(git rev-parse --abbrev-ref HEAD | sed 's/hota\///g' | sed 's/testing\///g' | sed 's/-/_/g')"
+```
+
+終わり！！！！！
 
 ## 参考
 
