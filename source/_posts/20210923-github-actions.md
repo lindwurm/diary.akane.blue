@@ -201,11 +201,26 @@ $ git branch --sort=committerdate
 +   DOCKER_TAG="$(git rev-parse --abbrev-ref HEAD | sed 's/hota\///g' | sed 's/testing\///g' | sed 's/-/_/g')"
 ```
 
-終わり！！！！！
+~~終わり！！！！！~~
+
+### 更に
+
+- そもそも環境変数 `GITHUB_REF` でトリガーしたブランチ名が取れると教えてもらった。
+- こっちは `refs/heads/<branch_name>` で返ってくるのでまた削ることになる
+
+つまりこうで
+
+```diff
+-   DOCKER_TAG="$(git rev-parse --abbrev-ref HEAD | sed 's/hota\///g' | sed 's/testing\///g' | sed 's/-/_/g')"
++   DOCKER_TAG="$(echo ${GITHUB_REF} | sed 's/refs\/heads\/hota\///g' | sed 's/testing\///g' | sed 's/-/_/g')"
+```
+
+なんと1文字も減ってなくてちょっと笑った。
 
 ## 参考
 
 - [GitHub Actionsのワークフロー構文 - GitHub Docs](https://docs.github.com/ja/actions/reference/workflow-syntax-for-github-actions)
 - [ワークフローをトリガーするイベント - GitHub Docs](https://docs.github.com/ja/actions/reference/events-that-trigger-workflows)
 - [Dockerイメージの公開 - GitHub Docs](https://docs.github.com/ja/actions/guides/publishing-docker-images)
+- [環境変数 - GitHub Docs](https://docs.github.com/ja/actions/reference/environment-variables#default-environment-variables)
 - [GitHub Actions を使って docker build し Docker Hub に push すると、速くて良い | tbsmcd.net](https://tbsmcd.net/post/github-docker-build-and-push/)
