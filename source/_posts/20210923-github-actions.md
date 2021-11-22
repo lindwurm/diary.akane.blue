@@ -25,7 +25,7 @@ summary: アップデートの所要時間短縮を図りました
 
 せっかくなので自分たち用の docker image を置いて docker-compose pull だけで済むようにしたいなあと思い始めました。
 
-特に自分たち以外で使うこともないだろう[^2] ということでプライベートリポジトリにしようと思っていたのですが、これだけのために自前でサーバーを立てようとはあんまり思えず、今流行りの GitHub Packages は Free だとプライベートリポジトリで利用可能なストレージが [500MB まで](https://github.com/features/packages) で、前述の tootsuite/mastodon を見る限り無理そうだったので流れに逆行して [Docker Hub](https://hub.docker.com) になりました。
+特に自分たち以外で使うこともないだろう[^2] ということでプライベートリポジトリにしようと思っていたのですが、今流行りの GitHub Packages は Free だとプライベートリポジトリで利用可能なストレージが [500MB まで](https://github.com/features/packages) で、前述の tootsuite/mastodon を見る限り無理そうだったので、かと言ってこれだけのために自前でサーバーを立てようとはあんまり思えずにいたのですが、さくらのクラウドのLabプロダクトとして [コンテナレジストリ](https://manual.sakura.ad.jp/cloud/appliance/container-registry/index.html) が提供されていたので、ここに立てました（非公開）。
 
 [^2]: favicon や apple-touch-icon など弊サーバーに特有のアセットが含まれるため他所で使われることがない
 
@@ -33,85 +33,9 @@ summary: アップデートの所要時間短縮を図りました
 
 やるなら [akane-blue/mastodon](https://github.com/akane-blue/mastodon) にpushされたら自動でビルドして Docker Hub に上げてくれると便利ですよね。今なら [GitHub Actions](https://github.co.jp/features/actions) を使うのが簡単そうなので試してみました。
 
-以下をリポジトリに `.github/workflows/push_docker_image.yml` みたいな名前で作ります。
+> 省略された試行錯誤の記録は https://wiki.maud.io/ja/poem/github-actions を、最新のは https://github.com/akane-blue/mastodon/blob/hota/master/.github/workflows/push_docker_image.yml を参照してください。
 
-```yaml
-name: Push our docker image
-on:
-  push:
-    branches: [ hota/master ]
-  pull_request:
-    branches: [ hota/master ]
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-jobs:
-  push_to_hub:
-    name: Push Docker image to Docker Hub
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_TOKEN }}
-      -
-        name: Checkout Git repository
-        uses: actions/checkout@v2
-        with:
-          repository: akane-blue/mastodon
-          path: mastodon
-      -
-        name: Build and push to Docker Hub
-        uses: docker/build-push-action@v2
-        with:
-          context: mastodon
-          push: true
-          tags: ${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_REPO }}:${{ secrets.REGISTRY_TAG }}
-```
-
-わたしの場合は `hota/master` ブランチだったのでこんな感じですが、適宜読み替えてください。
-
-あとは GitHub リポジトリ上で Settings -> Secrets から `Repository Secrets` に以下の内容を設定する必要があります。
-
-secret | 中身
----|---
-`REGISTRY_USERNAME` | Docker Hub のユーザー名
-`REGISTRY_TOKEN` | Docker Hub のトークン
-`REGISTRY_REPO` | Docker Hub のリポジトリ名
-`REGISTRY_TAG` | Docker イメージのタグ名
-
-`actions/checkout@v2` の中でリポジトリがわざわざ指定されてたり、ここの `path` と `docker/build-push-action@v2` の `context` を揃えてるのは最初この Actions を別のリポジトリで管理しようとした名残です。結局、別リポジトリのpushをトリガーにするのがまあまあ面倒臭いことが判明したので akane-blue/mastodon 自身になりましたが…。
-
-## スリム化
-
-無事に docker image のビルドが自動化され、サーバー側はそれらを pull するだけでよくなり、ソースコードをcloneしておく必要がなくなりました。
-
-結果として、現在は以下のファイルだけで構成されています:
-
-*mastodon/*  
-　├ **.env.production**  
-　├ **docker-compose.yml**  
-　├ *public/*  
-　│　├ **announcements.json**  
-　│　└ *system/*  
-　└ *redis/*  
-　 　└ **dump.rdb**  
-
-`public/system/` 以下もメディアを外部に置いていれば特に増えないはず（まだ空）なので、すごくスッキリしましたね！
-
-## 追記: 便利にする
-
-- よく考えたらプルリク来たときも固定のタグに上がってくるの良くないし、そもそも使わない気がした
-- 機能追加や検証時に `hota/testing/fix-featurename` みたいなブランチ切るのでそういうのもビルドしてタグ分けたい
-
-という気持ちになったので、[ちょこちょこ](https://github.com/akane-blue/mastodon/commit/2676e89578f63d8dc5725c0c8375aa15b8cb0b71)と[書き直しました](https://github.com/akane-blue/mastodon/commit/923038f554ce6987d977003f38062c07be07ec0b)。
-
-結果がこうで
+`.github/workflows/push_docker_image.yml` を生やします。
 
 ```yaml
 name: Push our docker image
@@ -134,6 +58,7 @@ jobs:
         name: Login to Docker Registry
         uses: docker/login-action@v1
         with:
+          registry: ${{ secrets.REGISTRY_SERVER }}
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_TOKEN }}
       -
@@ -147,7 +72,9 @@ jobs:
         id: set_tag
         run: |
           cd mastodon
-          DOCKER_TAG="$(git rev-parse --abbrev-ref HEAD | sed 's/hota\///g' | sed 's/testing\///g' | sed 's/-/_/g')"
+          DOCKER_TAG="$(echo ${GITHUB_REF} | sed -e 's/.*\///g' -e 's/-/_/g')"
+          # Use Docker `latest` tag convention
+          [ "$DOCKER_TAG" == "master" ] && DOCKER_TAG=latest
           echo "::set-output name=docker_tag::${DOCKER_TAG}"
       -
         name: Build and push to Docker Registry
@@ -155,67 +82,38 @@ jobs:
         with:
           context: mastodon
           push: true
-          tags: ${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_REPO }}:${{steps.set_tag.outputs.docker_tag}}
+          tags: ${{ secrets.REGISTRY_SERVER }}/${{ secrets.REGISTRY_REPO }}:${{steps.set_tag.outputs.docker_tag}}
 ```
 
-- `hota/**` ブランチがpushされたときをトリガーとして
-  - `hota/master` のほかに前述の `hota/testing/*` があるので
-- ブランチ名を適当に切り出してタグ名を決める
+`REGISTRY_SERVER`, `REGISTRY_USERNAME`, `REGISTRY_TOKEN`, `REGISTRY_REPO` とやたら secrets に突っ込んでいますがゆるして。
 
-ようになりました。
+### 追記
 
-### 教訓
+最近は mastodon/mastodon も GitHub Actions を使うようになったのですが fork 先で元々使ってた身からすると要らないので、他の `.github` 周りも含めて `.gitignore` に突っ込んで消しておきます。
 
-ブランチ名を取るときのまあまあアホポイントみて…
-
-```diff
-  run: |
-    cd mastodon
--   CURRENT_BRANCH="$(git branch --sort=-committerdate | sed -n 1p | sed 's/* //g')"
-+   CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
--   git switch ${CURRENT_BRANCH}
-    DOCKER_TAG="$(echo ${CURRENT_BRANCH} | sed 's/hota\///g' | sed 's/testing\///g' | sed 's/-/_/g')"
+```.gitignore
+# This is forked repository, no need to use dependabot
+/.github/*
+# but we want to use GitHub Actions
+!/.github/workflows/push_docker_image.yml
 ```
 
-- `git branch` だと `* hota/master` みたいになるので `* ` を取り除こうとした
-  - 1行目だけ切り出してるから当然のことで、実際こうだし…
+## スリム化
 
-```
-$ git branch --sort=committerdate
+無事に docker image のビルドが自動化され、サーバー側はそれらを pull するだけでよくなり、ソースコードをcloneしておく必要がなくなりました。
 
-* hota/master
-  hota/testing/fix-hogehoge
-  hota/testing/add-fugafuga
-```
+結果として、現在は以下のファイルだけで構成されています:
 
-- `actions/checkout@v2` 、そもそもトリガーになったブランチをcheckoutするので `git switch` する必要なかった
-- つまり現在のブランチ名を取ってくるだけでよかったので `git rev-parse` 使えば一発
+*mastodon/*  
+　├ **.env.production**  
+　├ **docker-compose.yml**  
+　├ *public/*  
+　│　├ **announcements.json**  
+　│　└ *system/*  
+　└ *redis/*  
+　 　└ **dump.rdb**  
 
-### 気づき
-
-**書いてて思い出したけどじゃあもう `CURRENT_BRANCH` 自体要らなくない？？？**
-
-```diff
--   CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
--   DOCKER_TAG="$(echo ${CURRENT_BRANCH} | sed 's/hota\///g' | sed 's/testing\///g' | sed 's/-/_/g')"
-+   DOCKER_TAG="$(git rev-parse --abbrev-ref HEAD | sed 's/hota\///g' | sed 's/testing\///g' | sed 's/-/_/g')"
-```
-
-~~終わり！！！！！~~
-
-### 更に
-
-- そもそも環境変数 `GITHUB_REF` でトリガーしたブランチ名が取れると教えてもらった。
-- こっちは `refs/heads/<branch_name>` で返ってくるのでまた削ることになる
-
-つまりこうで
-
-```diff
--   DOCKER_TAG="$(git rev-parse --abbrev-ref HEAD | sed 's/hota\///g' | sed 's/testing\///g' | sed 's/-/_/g')"
-+   DOCKER_TAG="$(echo ${GITHUB_REF} | sed 's/refs\/heads\/hota\///g' | sed 's/testing\///g' | sed 's/-/_/g')"
-```
-
-なんと1文字も減ってなくてちょっと笑った。
+`public/system/` 以下もメディアを外部に置いていれば特に増えないはず（まだ空）なので、すごくスッキリしましたね！
 
 ## 参考
 
