@@ -1,6 +1,6 @@
 # Config
 rss: /atom.xml
-favicon: https://mstdn.maud.io/favicon.ico
+favicon: https://s3-mstdn.maud.io/favicon.ico
 blog_logo: /images/akane_icon.png
 header_image: /images/diary_header.png
 bio: mstdn.maud.io の運用日誌です
