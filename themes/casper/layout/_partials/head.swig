@@ -63,6 +63,7 @@
 	<meta property="article:published_time" content="{{ date(page.date, 'YYYY-MM-DDTHH:MM:SS+08:00') }}"/> 
 	<meta property="article:author" content="{{ config.author }}">
 	<meta property="article:published_first" content="{{ config.title }}, {{ url_for(page.path) }}" />
+	<meta property="og:image" content="{{ post.cover_img }}">
 	{% endif %}
 
 	{# {{ css('css/screen') }}
@@ -74,7 +75,7 @@
 	{{ css('css/allinonecss.min') }}
 	
 	<link href="https://maud.io/css/koruri.css" rel="stylesheet">
-    <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
 
 	{% if theme.googleAnalytics %}
 	<script async src="https://www.googletagmanager.com/gtag/js?id={{ theme.GA_TRACKING_ID }}"></script>
