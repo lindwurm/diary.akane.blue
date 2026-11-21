@@ -1,0 +1,5 @@
+{{ define "main" }}
+{{- /* 归档 (archive.swig) */ -}}
+{{ partial "header.html" (dict "page" . "title" (partial "func/title.html" .) "description" (i18n "total" (len (partial "func/posts.html" .)))) }}
+{{ partial "index.html" . }}
+{{ end }}

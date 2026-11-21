@@ -1,0 +1,2 @@
+{{- /* 一覧ページの Paginator。head と本文の両方から呼ぶので引数を必ず揃える */ -}}
+{{- return (.Paginate (partial "func/list-pages.html" .)) -}}

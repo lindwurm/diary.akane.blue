@@ -1,0 +1,25 @@
+<nav class="site-nav">
+    <div class="site-nav-left">
+        <ul class="nav">
+            <li>
+                {{ if site.Params.blog_logo -}}
+                {{ if not .IsHome -}}
+                <a class="site-nav-logo" href="/"  title="{{ site.Title }}">
+                    <img src="{{ site.Params.blog_logo }}" alt="{{ site.Title }}" />
+                </a>
+                {{- end }}
+                {{- else -}}
+                <a href="/" title="Home">HOME</a>
+                {{- end }}
+            </li>
+            {{ range site.Params.menu -}}
+            <li>
+                <a href="{{ .url }}" title="{{ .name }}">{{ .name }}</a>
+            </li>
+            {{ end }}
+        </ul>
+    </div>
+    <div class="site-nav-right">
+        {{ partial "public/social.html" . }}
+    </div>
+</nav>

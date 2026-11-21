@@ -1,0 +1,10 @@
+{{- $s := site.Params.social -}}
+<div class="social-links" {{ if partial "func/is-about.html" . }} style="display: none;" {{ end }}>
+    {{- range $name := slice "weibo" "github" "facebook" "twitter" "telegram" "bilibili" "youtube" }}
+    {{- with index $s $name }}
+    <a class="social-link" title="{{ $name }}" href="{{ . }}" target="_blank" rel="noopener">
+        {{ partial (printf "public/icons/%s.svg" $name) . }}
+    </a>
+    {{- end }}
+    {{- end }}
+</div>

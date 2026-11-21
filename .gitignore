@@ -1,7 +1,9 @@
 .DS_Store
 Thumbs.db
-db.json
 *.log
-node_modules/
 public/
-.deploy*/
+resources/
+.hugo_build.lock
+# Hexo 時代の生成物 (不要になったら削除してよい)
+node_modules/
+db.json

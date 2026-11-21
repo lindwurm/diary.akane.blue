@@ -1,0 +1,13 @@
+{{ define "main" }}
+{{- if partial "func/is-post.html" . }}
+{{ partial "header.html" (dict "page" . "title" .Title "description" "") }}
+{{ partial "post.html" . }}
+{{- else }}
+{{- if partial "func/is-about.html" . }}
+{{ partial "about.html" . }}
+{{- else }}
+{{ partial "header.html" (dict "page" . "title" .Title "description" "") }}
+{{- end }}
+{{ partial "page.html" . }}
+{{- end }}
+{{ end }}

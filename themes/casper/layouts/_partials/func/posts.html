@@ -1,0 +1,2 @@
+{{- /* 記事一覧 (日付の新しい順)。Hexo の site.posts 相当 */ -}}
+{{- return (where site.RegularPages "Section" "in" site.Params.mainSections).ByDate.Reverse -}}

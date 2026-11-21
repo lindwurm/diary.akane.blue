@@ -1,0 +1,5 @@
+{{ define "main" }}
+{{- /* 标签归档 (tag.swig) */ -}}
+{{ partial "header.html" (dict "page" . "title" (partial "func/title.html" .) "description" (i18n "tags")) }}
+{{ partial "index.html" . }}
+{{ end }}

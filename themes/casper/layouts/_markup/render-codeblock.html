@@ -1,0 +1,30 @@
+{{- /*
+  コードブロック。レイアウトは Hexo 版 (hexo-util highlight, gutter: false) と同じマークアップ:
+    <figure class="highlight LANG"><figcaption><span>..</span></figcaption><table><tr><td class="code"><pre>
+      <span class="line">...</span><br>...
+    </pre></td></tr></table></figure>
+  色分けは Chroma のトークン (class="k" など) をそのまま使い、配色は static/css/chroma.css で指定する。
+  Chroma が知らない言語・言語指定なしは plaintext として色を付けない。
+*/ -}}
+{{- $lang := lower .Type -}}
+{{- $highlight := and $lang (ne $lang "plaintext") (ne $lang "text") (ne $lang "txt") (transform.CanHighlight $lang) -}}
+{{- $class := cond (and $lang (transform.CanHighlight $lang)) $lang "plaintext" -}}
+{{- $code := strings.TrimRight "\r\n" .Inner | replaceRE `\r\n` "\n" -}}
+{{- $lines := slice -}}
+{{- if $highlight -}}
+  {{- $html := string (transform.Highlight (printf "%s\n" $code) $lang "noClasses=false,lineNos=false") -}}
+  {{- /* Chroma は 1 行ごとに <span class="line"><span class="cl">…\n</span></span> で包むので、中身だけ取り出す */ -}}
+  {{- range findRESubmatch `<span class="line"><span class="cl">([^\n]*)\n((?:</span>)?)</span></span>` $html -}}
+    {{- $lines = $lines | append (printf "%s%s" (index . 1) (index . 2)) -}}
+  {{- end -}}
+{{- else -}}
+  {{- range split $code "\n" -}}
+    {{- $lines = $lines | append (htmlEscape .) -}}
+  {{- end -}}
+{{- end -}}
+<figure class="highlight {{ $class }}">
+{{- with .Attributes.caption -}}<figcaption><span>{{ . }}</span></figcaption>{{- end -}}
+<table><tr><td class="code"><pre>
+{{- range $lines }}<span class="line">{{ . | safeHTML }}</span><br>{{ end -}}
+</pre></td></tr></table></figure>
+{{- /**/ -}}

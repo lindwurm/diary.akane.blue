@@ -1,0 +1,30 @@
+{{- $isPost := partial "func/is-post.html" . -}}
+{{- $floatHeader := and $isPost site.Params.floadheader -}}
+{{- /* 記事ページのフロートヘッダー + 読了プログレスバー (表示制御は allinone.js の postProgressBar) */ -}}
+{{ if $floatHeader -}}
+{{ partial "public/fload-header.html" . }}
+{{- end }}
+{{/* 卸载时为 unregister */}}
+<script>
+    if(window.navigator && navigator.serviceWorker) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+                registration.unregister()
+            }
+        })
+    }
+</script>
+
+<script id="scriptLoad" src="/js/allinone.min.js" async></script>
+
+{{/* 脚本加载监听 */}}
+<script>
+    document.getElementById('scriptLoad').addEventListener('load', function () {
+        {{- if or (not $isPost) site.Params.lazyload }}
+            var bLazy = new Blazy();
+        {{- end }}
+        {{- if $floatHeader }}
+            postProgressBar();
+        {{- end }}
+    })
+</script>

@@ -1,0 +1,16 @@
+{{- /* 一覧ページに並べる記事 */ -}}
+{{- $pages := partial "func/posts.html" . -}}
+{{- if eq .Kind "term" -}}
+  {{- $pages = .Pages.ByDate.Reverse -}}
+{{- else if and (partial "func/is-archive.html" .) .Params.archive_year -}}
+  {{- $y := .Params.archive_year -}}
+  {{- $m := .Params.archive_month -}}
+  {{- $filtered := slice -}}
+  {{- range $pages -}}
+    {{- if and (eq (.Date.Format "2006") $y) (or (not $m) (eq (.Date.Format "01") $m)) -}}
+      {{- $filtered = $filtered | append . -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $pages = $filtered -}}
+{{- end -}}
+{{- return $pages -}}

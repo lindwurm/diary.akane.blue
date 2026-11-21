@@ -1,0 +1,7 @@
+{{- $class := "tag-template" -}}
+{{- if .IsHome -}}
+  {{- $class = "home-template" -}}
+{{- else if partial "func/is-post.html" . -}}
+  {{- $class = "post-template" -}}
+{{- end -}}
+{{- return $class -}}

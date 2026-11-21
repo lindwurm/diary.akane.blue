@@ -1,0 +1,17 @@
+<div class="floating-header" >
+	<div class="floating-header-logo">
+        <a href="/" title="{{ site.Title }}">
+			{{ with site.Params.favicon -}}
+                <img src="{{ . }}" alt="{{ site.Title }} icon" />
+			{{- end }}
+            <span>{{ site.Title }}</span>
+        </a>
+    </div>
+    <span class="floating-header-divider">&mdash;</span>
+    <div class="floating-header-title">{{ .Title }}</div>
+    <progress class="progress" value="0">
+        <span class="progress-container">
+            <span class="progress-bar"></span>
+        </span>
+    </progress>
+</div>

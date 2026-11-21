@@ -1,0 +1,35 @@
+{{- /* Hexo の paginator() ヘルパー相当 (end_size: 1, mid_size: 2, space: &hellip;) */ -}}
+{{- $current := .PageNumber -}}
+{{- $total := .TotalPages -}}
+{{- $pagers := .Pagers -}}
+{{- $endSize := 1 -}}
+{{- $midSize := 2 -}}
+{{- $leftEnd := math.Min $endSize (sub $current 1) | int -}}
+{{- $rightEnd := math.Max (add (sub $total $endSize) 1) (add $current 1) | int -}}
+{{- $leftMid := math.Max (add $leftEnd 1) (sub $current $midSize) | int -}}
+{{- $rightMid := math.Min (sub $rightEnd 1) (add $current $midSize) | int -}}
+{{- $nums := slice -}}
+{{- range seq 1 $leftEnd }}{{ if ge $leftEnd 1 }}{{ $nums = $nums | append . }}{{ end }}{{ end -}}
+{{- if gt (sub $leftMid $leftEnd) 1 }}{{ $nums = $nums | append 0 }}{{ end -}}
+{{- if lt $leftMid $current }}{{ range seq $leftMid (sub $current 1) }}{{ $nums = $nums | append . }}{{ end }}{{ end -}}
+{{- $nums = $nums | append $current -}}
+{{- if le (add $current 1) $rightMid }}{{ range seq (add $current 1) $rightMid }}{{ $nums = $nums | append . }}{{ end }}{{ end -}}
+{{- if gt (sub $rightEnd $rightMid) 1 }}{{ $nums = $nums | append 0 }}{{ end -}}
+{{- if le $rightEnd $total }}{{ range seq $rightEnd $total }}{{ $nums = $nums | append . }}{{ end }}{{ end -}}
+{{- $out := "" -}}
+{{- if .HasPrev -}}
+  {{- $out = printf `%s<a class="extend prev" rel="prev" href="%s">← PREV</a>` $out .Prev.URL -}}
+{{- end -}}
+{{- range $nums -}}
+  {{- if eq . 0 -}}
+    {{- $out = printf `%s<span class="space">&hellip;</span>` $out -}}
+  {{- else if eq . $current -}}
+    {{- $out = printf `%s<span class="page-number current">%d</span>` $out . -}}
+  {{- else -}}
+    {{- $out = printf `%s<a class="page-number" href="%s">%d</a>` $out (index $pagers (sub . 1)).URL . -}}
+  {{- end -}}
+{{- end -}}
+{{- if .HasNext -}}
+  {{- $out = printf `%s<a class="extend next" rel="next" href="%s">NEXT →</a>` $out .Next.URL -}}
+{{- end -}}
+{{- $out | safeHTML -}}

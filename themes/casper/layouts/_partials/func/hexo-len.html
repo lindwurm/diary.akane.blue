@@ -1,0 +1,10 @@
+{{- /*
+  JavaScript の String#length 相当の文字数 (U+10000 以上はサロゲートペアで 2) に、
+  エンティティ化される文字の追加分を足す。ctx: dict "s" 文字列 "w" (dict 文字 追加文字数)
+*/ -}}
+{{- $s := .s -}}
+{{- $n := add (strings.RuneCount $s) (len (findRE `[\x{10000}-\x{10FFFF}]` $s)) -}}
+{{- range $ch, $k := .w -}}
+  {{- $n = add $n (mul $k (strings.Count $ch $s)) -}}
+{{- end -}}
+{{- return $n -}}

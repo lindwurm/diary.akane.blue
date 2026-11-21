@@ -1,0 +1,38 @@
+{{- /*
+  Hexo の toc(page.content, {list_number: false}) 相当。
+  render-heading フックが出力した見出しを本文から拾い、Hexo と同じ入れ子の <ol> を組み立てる。
+*/ -}}
+{{- $re := `<h([1-6]) id="([^"]*)"><a href="#[^"]*" class="headerlink" title="[^"]*"></a>(.*?)</h[1-6]>` -}}
+{{- $headings := findRESubmatch $re (string .) -}}
+{{- $out := "" -}}
+{{- if $headings -}}
+  {{- $out = `<ol class="toc">` -}}
+  {{- $stack := slice -}}
+  {{- range $headings -}}
+    {{- $level := int (index . 1) -}}
+    {{- $id := index . 2 -}}
+    {{- $text := index . 3 | plainify -}}
+    {{- $popped := false -}}
+    {{- range $stack -}}
+      {{- if and (gt (len $stack) 0) (ge (index $stack (sub (len $stack) 1)) $level) -}}
+        {{- $out = printf "%s</li>" $out -}}
+        {{- $stack = first (sub (len $stack) 1) $stack -}}
+        {{- $popped = true -}}
+        {{- if and (gt (len $stack) 0) (ge (index $stack (sub (len $stack) 1)) $level) -}}
+          {{- $out = printf "%s</ol>" $out -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if and (gt (len $stack) 0) (not $popped) -}}
+      {{- $out = printf `%s<ol class="toc-child">` $out -}}
+    {{- end -}}
+    {{- $out = printf `%s<li class="toc-item toc-level-%d"><a class="toc-link" href="#%s"><span class="toc-text">%s</span></a>` $out $level (urlquery $id) $text -}}
+    {{- $stack = $stack | append $level -}}
+  {{- end -}}
+  {{- range $i, $_ := $stack -}}
+    {{- $out = printf "%s</li>" $out -}}
+    {{- if lt $i (sub (len $stack) 1) }}{{ $out = printf "%s</ol>" $out }}{{ end -}}
+  {{- end -}}
+  {{- $out = printf "%s</ol>" $out -}}
+{{- end -}}
+{{- return ($out | safeHTML) -}}

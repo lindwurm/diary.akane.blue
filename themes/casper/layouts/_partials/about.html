@@ -1,0 +1,32 @@
+{{- $s := site.Params.social -}}
+{{- $total := i18n "total" (len (partial "func/posts.html" .)) -}}
+<header class="site-header outer {{ if site.Params.header_image }}" style="background-image: url({{ site.Params.header_image | safeCSS }})"{{ else }}no-cover"{{ end }}>
+    <div class="inner">
+        {{ partial "public/nav.html" . }}
+        <div class="site-header-content">
+            {{ with site.Params.author_image -}}
+            <img class="author-profile-image" src="{{ . }}" alt="{{ site.Params.author }}" />
+            {{- end }}
+            <h1 class="site-title">{{ site.Params.author }}</h1>
+            {{ with site.Params.author_bio -}}
+            <h2 class="author-bio">{{ . }}</h2>
+            {{- end }}
+            <div class="author-meta">
+                {{ with site.Params.author_location -}}
+                <div class="author-location">{{ . }} <span class="bull">&bull;</span></div>
+                {{- end }}
+                <a class="author-stats" href="/archives" title="{{ $total }}">
+                    {{ $total }}
+                    <span class="bull">&bull;</span>
+                </a>
+                {{- range $name := slice "weibo" "github" "facebook" "twitter" "telegram" "bilibili" "youtube" }}
+                {{- with index $s $name }}
+                <a class="social-link" title="{{ $name }}" href="{{ . }}" target="_blank" rel="noopener">
+                    {{ partial (printf "public/icons/%s.svg" $name) . }}
+                </a>
+                {{- end }}
+                {{- end }}
+            </div>
+        </div>
+    </div>
+</header>

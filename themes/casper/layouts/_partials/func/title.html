@@ -1,0 +1,10 @@
+{{- /* head.swig の title 決定ロジック */ -}}
+{{- $title := .Title -}}
+{{- if .IsHome -}}
+  {{- $title = site.Title -}}
+{{- else if partial "func/is-archive.html" . -}}
+  {{- $title = i18n "archive_a" -}}
+{{- else if eq .Kind "term" -}}
+  {{- $title = printf "%s: %s" (i18n "tag") .Title -}}
+{{- end -}}
+{{- return $title -}}
