@@ -4,6 +4,3 @@ Thumbs.db
 public/
 resources/
 .hugo_build.lock
-# Hexo 時代の生成物 (不要になったら削除してよい)
-node_modules/
-db.json
