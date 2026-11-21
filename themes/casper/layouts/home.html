@@ -1,0 +1,4 @@
+{{ define "main" }}
+{{ partial "header.html" (dict "page" . "title" (partial "func/title.html" .) "description" site.Params.bio) }}
+{{ partial "index.html" . }}
+{{ end }}

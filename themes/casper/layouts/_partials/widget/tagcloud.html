@@ -1,0 +1,30 @@
+{{- /* tagcloud({min_font: 14, max_font: 24}) 相当: 件数の順位で文字サイズを決める */ -}}
+{{- $tags := site.Taxonomies.tags -}}
+{{- if $tags }}
+{{- $min := 14.0 -}}
+{{- $max := 24.0 -}}
+{{- $counts := slice -}}
+{{- range $tags }}{{ $counts = $counts | append .Count }}{{ end -}}
+{{- $sizes := sort (uniq $counts) -}}
+{{- $length := sub (len $sizes) 1 -}}
+{{- $links := slice -}}
+{{- range $tags.Alphabetical -}}
+  {{- $ratio := 0.0 -}}
+  {{- if gt $length 0 -}}
+    {{- $idx := 0 -}}
+    {{- $c := .Count -}}
+    {{- range $i, $s := $sizes }}{{ if eq $s $c }}{{ $idx = $i }}{{ end }}{{ end -}}
+    {{- $ratio = div (float $idx) $length -}}
+  {{- end -}}
+  {{- $size := div (math.Round (mul (add $min (mul (sub $max $min) $ratio)) 100)) 100 -}}
+  {{- $links = $links | append (printf `<a href="%s" style="font-size: %vpx;">%s</a>` .Page.RelPermalink $size (.Page.LinkTitle | htmlEscape)) -}}
+{{- end }}
+<article class="read-next-card" {{ with site.Params.header_image }} style="background-image: url({{ . }})" {{ end }} >
+	<header class="read-next-card-header tagcloud-card">
+		<h3 class="read-next-card-header-title">{{ i18n "tagcloud" }}</h3>
+	</header>
+	<div class="read-next-card-content-ext">
+		{{ delimit $links " " | safeHTML }}
+	</div>
+</article>
+{{- end }}

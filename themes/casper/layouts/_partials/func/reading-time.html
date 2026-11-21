@@ -1,0 +1,41 @@
+{{- /*
+  Hexo テーマの読了時間: Math.round(strip_html(post.content).length / 500)
+
+  Hexo の post.content は記号を HTML エンティティにしたまま数えている (例: "/" → "&#x2F;" で 6 文字) ので、
+  Hugo の本文を素の文字に戻してから、Hexo がエンティティにする文字の分だけ文字数を足して近似する。
+    - 地の文:          & < > " ' ` / =
+    - インラインコード: & < > " '
+    - コードブロック:   & < > " ' { }  (+ ブロックごとに改行 2 つ)
+    - URL がそのままリンクテキストになっている自動リンクは地の文扱いしない
+      (ただし Markdown で [https://...](...) と明示したものは地の文と同じく / と = がエンティティになる)
+    - 改行は marked がブロック要素の後に入れる分を数える
+*/ -}}
+{{- $wText := dict "&" 4 "<" 3 ">" 3 `"` 5 "'" 4 "`" 4 "/" 5 "=" 5 -}}
+{{- $wCode := dict "&" 4 "<" 3 ">" 3 `"` 5 "'" 4 -}}
+{{- $wBlock := dict "&" 4 "<" 3 ">" 3 `"` 5 "'" 5 "{" 5 "}" 5 -}}
+{{- $reBlock := `(?s)<figure class="highlight.*?</figure>` -}}
+{{- $reCode := `(?s)<code>(.*?)</code>` -}}
+{{- $reURL := `<a [^>]*>(https?://[^<]*)</a>` -}}
+
+{{- $h := string (partial "func/content.html" .) -}}
+{{- $n := 0 -}}
+{{- range findRE $reBlock $h -}}
+  {{- $n = add $n 2 (partial "func/hexo-len.html" (dict "s" (. | replaceRE `<[^>]*>` "" | htmlUnescape) "w" $wBlock)) -}}
+{{- end -}}
+{{- $h = replaceRE $reBlock "" $h -}}
+{{- range findRESubmatch $reCode $h -}}
+  {{- $n = add $n (partial "func/hexo-len.html" (dict "s" (index . 1 | htmlUnescape) "w" $wCode)) -}}
+{{- end -}}
+{{- $h = replaceRE $reCode "" $h -}}
+{{- $n = add $n (len (findRE `</p>|<ul>|<ol>|</li>|</ul>|</ol>|<blockquote>|</blockquote>|<hr>` $h)) -}}
+{{- range findRESubmatch $reURL $h -}}
+  {{- $n = add $n (partial "func/hexo-len.html" (dict "s" (index . 1 | htmlUnescape) "w" $wCode)) -}}
+{{- end -}}
+{{- $h = replaceRE $reURL "" $h -}}
+{{- range findRESubmatch `\[(https?://[^\]\s]*)\]\(` .RawContent -}}
+  {{- $u := index . 1 -}}
+  {{- $n = add $n (mul 5 (strings.Count "/" $u)) (mul 5 (strings.Count "=" $u)) -}}
+{{- end -}}
+{{- $text := $h | replaceRE `<[^>]*>` "" | htmlUnescape | replaceRE `\n` "" -}}
+{{- $n = add $n (partial "func/hexo-len.html" (dict "s" $text "w" $wText)) -}}
+{{- return (int (math.Round (div (float $n) 500))) -}}

@@ -1,0 +1,29 @@
+{{- /*
+  Hexo (hexo-generator-archive) の /archives/YYYY/ と /archives/YYYY/MM/ を生成する。
+  content adapter の中からは site.RegularPages を参照できないため、
+  記事ファイルの front matter から date を読み取って、記事のある年・月だけページを作る。
+  各ページに並べる記事は、テンプレート側で実際の .Date を見て絞り込む。
+*/ -}}
+{{- $months := dict -}}
+{{- range os.ReadDir "content/posts" -}}
+  {{- if and (not .IsDir) (strings.HasSuffix .Name ".md") (ne .Name "_index.md") -}}
+    {{- $src := os.ReadFile (printf "content/posts/%s" .Name) -}}
+    {{- $fm := index (findRESubmatch `(?s)\A\x{feff}?---\r?\n(.*?)\r?\n---` $src 1) 0 -}}
+    {{- with $fm -}}
+      {{- $front := index . 1 -}}
+      {{- $draft := findRE `(?m)^draft:\s*true\s*$` $front 1 -}}
+      {{- $date := index (findRESubmatch `(?m)^date:\s*['"]?(\d{4})-(\d{2})-\d{2}` $front 1) 0 -}}
+      {{- if and $date (not $draft) -}}
+        {{- $y := index $date 1 -}}
+        {{- $m := index $date 2 -}}
+        {{- $months = merge $months (dict $y (merge (index $months $y | default dict) (dict $m true))) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- range $y, $ms := $months -}}
+  {{- $.AddPage (dict "path" $y "kind" "section" "title" "Archives" "params" (dict "archive_year" $y)) -}}
+  {{- range $m, $_ := $ms -}}
+    {{- $.AddPage (dict "path" (printf "%s/%s" $y $m) "kind" "section" "title" "Archives" "params" (dict "archive_year" $y "archive_month" $m)) -}}
+  {{- end -}}
+{{- end -}}

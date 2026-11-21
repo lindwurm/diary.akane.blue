@@ -1,0 +1,32 @@
+{{- /* hexo-generator-feed (atom.xml, limit: 20) 相当 */ -}}
+{{- $posts := first 20 (partial "func/posts.html" .) -}}
+{{- $updated := now -}}
+{{- with $posts }}{{ $updated = (index (sort . "Lastmod" "desc") 0).Lastmod }}{{ end -}}
+{{- $base := strings.TrimSuffix "/" site.BaseURL -}}
+{{ printf `<?xml version="1.0" encoding="utf-8"?>` | safeHTML }}
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>{{ site.Title }}</title>
+  {{ with site.Params.subtitle }}<subtitle>{{ . }}</subtitle>{{ end }}
+  <link href="{{ $base }}/atom.xml" rel="self"/>
+  <link href="{{ site.BaseURL }}"/>
+  <updated>{{ partial "func/date-xml.html" $updated }}</updated>
+  <id>{{ site.BaseURL }}</id>
+  <author>
+    <name>{{ site.Params.author }}</name>
+  </author>
+  <generator uri="https://gohugo.io/">Hugo</generator>
+  {{- range $posts }}
+  <entry>
+    <title>{{ .Title }}</title>
+    <link href="{{ .Permalink }}"/>
+    <id>{{ .Permalink }}</id>
+    <published>{{ partial "func/date-xml.html" .Date }}</published>
+    <updated>{{ partial "func/date-xml.html" .Lastmod }}</updated>
+    <content type="html">{{ printf "<![CDATA[%s]]>" (replaceRE `[\x00-\x1f\x7f]` "" (string (partial "func/content.html" .))) | safeHTML }}</content>
+    <summary type="html">{{ substr (string (partial "func/content.html" .)) 0 140 }}</summary>
+    {{- range .GetTerms "tags" }}
+    <category term="{{ .LinkTitle }}" scheme="{{ .Permalink }}"/>
+    {{- end }}
+  </entry>
+  {{- end }}
+</feed>

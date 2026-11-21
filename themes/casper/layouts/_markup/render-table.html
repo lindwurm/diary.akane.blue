@@ -1,0 +1,23 @@
+{{- /* marked と同じく、列の揃えは style ではなく align 属性で出力する */ -}}
+<table>
+<thead>
+{{- range .THead }}
+<tr>
+{{- range . }}
+<th{{ with .Alignment }} align="{{ . }}"{{ end }}>{{ .Text }}</th>
+{{- end }}
+</tr>
+{{- end }}
+</thead>
+{{- with .TBody }}
+<tbody>
+{{- range . }}
+<tr>
+{{- range . }}
+<td{{ with .Alignment }} align="{{ . }}"{{ end }}>{{ .Text }}</td>
+{{- end }}
+</tr>
+{{- end }}
+</tbody>
+{{- end }}
+</table>

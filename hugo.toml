@@ -1,0 +1,107 @@
+baseURL = "https://diary.akane.blue/"
+locale = "ja"
+defaultContentLanguage = "ja"
+title = "茜の鯖缶日誌"
+theme = "casper"
+timeZone = "Asia/Tokyo"
+enableGitInfo = true
+# Hexo の future: true 相当
+buildFuture = true
+# Hexo と同じくタグ名などの大文字小文字を URL でも保つ
+disablePathToLower = true
+
+# Hexo が生成していなかったページは作らない
+disableKinds = ["taxonomy", "sitemap", "RSS", "404"]
+
+[pagination]
+  pagerSize = 10
+  path = "page"
+  # Hexo には /page/1/ が無いのでリダイレクト用ページを作らない
+  disableAliases = true
+
+[permalinks.page]
+  # Hexo: permalink: :year/:month/:day/:title/
+  posts = "/:year/:month/:day/:slug/"
+
+[taxonomies]
+  tag = "tags"
+
+[frontmatter]
+  # Hexo の updated: も使えるようにしておく。無ければ最終コミット日時
+  lastmod = ["lastmod", "updated", ":git", "date"]
+
+[outputs]
+  home = ["html", "atom"]
+  section = ["html"]
+  term = ["html"]
+  page = ["html"]
+
+[mediaTypes."application/atom+xml"]
+  suffixes = ["xml"]
+
+[outputFormats.atom]
+  mediaType = "application/atom+xml"
+  baseName = "atom"
+  rel = "alternate"
+  isPlainText = false
+
+[markup]
+  [markup.goldmark.renderer]
+    # 記事中の iframe / script 埋め込みをそのまま出力する
+    unsafe = true
+    # hexo-renderer-marked の breaks: true 相当
+    hardWraps = true
+  [markup.goldmark.extensions.typographer]
+    # hexo-renderer-marked の smartypants 相当 (<< >> は変換しない)
+    leftAngleQuote = "&lt;&lt;"
+    rightAngleQuote = "&gt;&gt;"
+  [markup.highlight]
+    noClasses = false
+    lineNos = false
+    guessSyntax = false
+
+[params]
+  mainSections = ["posts"]
+  subtitle = ""
+  description = ""
+  author = "hota"
+
+  # --- 以下は Hexo テーマ (themes/casper/_config.yml) から移植 ---
+  rss = "/atom.xml"
+  favicon = "https://s3-mstdn.maud.io/favicon.ico"
+  blog_logo = "/images/akane_icon.png"
+  header_image = "/images/diary_header.png"
+  bio = "mstdn.maud.io の運用日誌です"
+  post_toc = true
+  keywords = "Mastodon, mstdn.maud.io, 障害情報"
+
+  author_image = "https://avatars0.githubusercontent.com/u/1874549?s=460&v=4"
+  author_bio = ""
+  author_location = "Japan"
+
+  # Post page fload header
+  floadheader = true
+  lazyload = false
+  navColor = "3c484e"
+
+  [[params.menu]]
+    name = "HOME"
+    url = "/"
+  [[params.menu]]
+    name = "ABOUT"
+    url = "/about"
+  [[params.menu]]
+    name = "ARCHIVES"
+    url = "/archives"
+  [[params.menu]]
+    name = "FEED"
+    url = "/atom.xml"
+
+  [params.social]
+    github = "https://github.com/lindwurm"
+    twitter = "https://twitter.com/lindwurm"
+
+  [params.widgets]
+    recent_posts = true
+    category = false
+    tagcloud = true

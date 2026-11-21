@@ -1,0 +1,14 @@
+{{- with site.Params.widgets }}
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+            {{ if .recent_posts -}}
+            {{ partial "widget/recent_posts.html" . }}
+            {{- end }}
+            {{ if .tagcloud -}}
+            {{ partial "widget/tagcloud.html" . }}
+            {{- end }}
+        </div>
+    </div>
+</aside>
+{{- end }}

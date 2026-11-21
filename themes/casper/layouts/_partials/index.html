@@ -1,0 +1,72 @@
+{{- /* 首页、归档、分类、标签 (index.swig) */ -}}
+{{- $pager := partial "func/pager.html" . -}}
+<div id="site-main" class="site-main outer" role="main">
+	<div class="inner">
+		<div class="post-feed">
+			{{ range $i, $post := $pager.Pages -}}
+			<article class="post-card post {{ if not .Params.cover_img }} no-image {{ end }}">
+				{{ with .Params.cover_img -}}
+				<a class="post-card-image-link" title="{{ $post.Title }}" href="{{ $post.RelPermalink }}">
+					<div class="post-card-image b-lazy" data-src="{{ . }}"></div>
+				</a>
+				{{- end }}
+				<div class="post-card-content">
+					<a class="post-card-content-link" title="{{ .Title }}" href="{{ .RelPermalink }}">
+						<header class="post-card-header">
+							<span class="post-card-tags">
+								|
+								<time datetime="{{ partial "func/date-xml.html" .Date }}">
+									{{ .Date.Format "2006-01-02" }}
+								</time>
+							</span>
+							<h2 class="post-card-title">{{ .Title }}</h2>
+						</header>
+						<div class="post-card-excerpt">
+							<p>
+								{{- $num := 100 -}}
+								{{- if not .Params.cover_img }}{{ $num = 240 }}{{ end -}}
+								{{- if eq $i 0 }}{{ $num = 80 }}{{ end -}}
+								{{- $content := .Content | replaceRE `<[^>]*>` "" | htmlUnescape -}}
+								{{- with .Params.summary }}{{ $content = . }}{{ end }}
+								{{ substr $content 0 $num }}
+								{{ if gt (strings.RuneCount $content) $num }}...{{ end }}
+							</p>
+						</div>
+					</a>
+					<footer class="post-card-meta">
+						<div class="author-list">
+							<div class="author-list-item">
+								<div class="author-name-tooltip">{{ site.Params.author }}</div>
+								{{ with site.Params.author_image -}}
+								<a href="/about" class="static-avatar">
+									<img class="author-profile-image" src="{{ . }}" alt="{{ site.Params.author }}" />
+								</a>
+								{{- else -}}
+								<a href="/about" class="static-avatar author-profile-image">
+									{{ partial "public/icons/avatar.svg" . }}
+								</a>
+								{{- end }}
+							</div>
+						</div>
+						<span class="reading-time">
+							{{ partial "func/reading-time.html" . }}
+							min read
+						</span>
+					</footer>
+				</div>
+			</article>
+			{{ end }}
+		</div>
+	</div>
+</div>
+
+{{/* 显示页号 */}}
+<div class="outer">
+	<nav class="pagination">
+		{{ if gt $pager.TotalPages 1 -}}
+		<nav class="page-nav">
+			{{ partial "paginator.html" $pager }}
+		</nav>
+		{{- end }}
+	</nav>
+</div>

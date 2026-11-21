@@ -1,0 +1,2 @@
+{{- /* 記事本文。Hexo は <!-- more --> を <span id="more"></span> に置き換えて出力する */ -}}
+{{- return (replace .Content "<!-- more -->" `<span id="more"></span>` | safeHTML) -}}

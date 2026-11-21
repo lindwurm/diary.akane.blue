@@ -1,0 +1,14 @@
+{{- /*
+  hexo-renderer-marked の link() + Hexo の external_link フィルタ相当。
+  - href は encodeURL() と同様に正規化する (パスが空なら "/" を補う、非 ASCII は % エンコード)
+  - 外部リンクには target="_blank" rel="noopener" を付ける
+*/ -}}
+{{- $href := .Destination -}}
+{{- $u := urls.Parse $href -}}
+{{- $isAbs := and $u.Scheme $u.Host -}}
+{{- if and $isAbs (not $u.Path) -}}
+  {{- $href = replaceRE `^([a-zA-Z][a-zA-Z0-9+.-]*://[^/?#]+)` "$1/" $href -}}
+{{- end -}}
+{{- $external := and (or (eq $u.Scheme "http") (eq $u.Scheme "https") (hasPrefix .Destination "//")) (ne $u.Host (urls.Parse site.BaseURL).Host) -}}
+<a {{ if $external }}target="_blank" rel="noopener" {{ end }}href="{{ $href | safeURL }}"{{ with .Title }} title="{{ . }}"{{ end }}>{{ .Text }}</a>
+{{- /**/ -}}

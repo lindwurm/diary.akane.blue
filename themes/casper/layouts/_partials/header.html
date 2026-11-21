@@ -1,0 +1,29 @@
+{{- /* header 部分。ctx: dict "page" . "title" $title "description" $description */ -}}
+{{- $p := .page -}}
+{{- if not (partial "func/is-post.html" $p) }}
+<header class="site-header outer {{ if not site.Params.header_image }}no-cover"{{ else }}" style="background-image: url({{ site.Params.header_image | safeCSS }})"{{ end }}>
+    <div class="inner">
+        {{ if not $p.IsHome -}}
+        {{ partial "public/nav.html" $p }}
+        {{- end }}
+        <div class="site-header-content">
+            {{ if and $p.IsHome site.Params.blog_logo -}}
+            <img class="author-profile-image" src="{{ site.Params.blog_logo }}" alt="{{ .title }}" />
+            {{- end }}
+            <h1 class="site-title">
+                {{ .title }}
+            </h1>
+            <h2 class="site-description">{{ .description }}</h2>
+        </div>
+        {{ if $p.IsHome -}}
+        {{ partial "public/nav.html" $p }}
+        {{- end }}
+    </div>
+</header>
+{{- else }}
+<header class="site-header post-site-header outer">
+    <div class="inner">
+        {{ partial "public/nav.html" $p }}
+    </div>
+</header>
+{{- end }}

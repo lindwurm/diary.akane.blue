@@ -1,0 +1,4 @@
+{{- /* hexo-renderer-marked の heading() 相当: <hN id="..."><a href="#..." class="headerlink" title="..."></a>text</hN> */ -}}
+{{- $id := partial "func/slugize.html" (.Text | htmlUnescape | plainify | htmlUnescape | strings.TrimSpace) -}}
+{{- $title := .Text | plainify -}}
+{{- printf `<h%d id="%s"><a href="#%s" class="headerlink" title="%s"></a>%s</h%d>` .Level ($id | htmlEscape) ($id | htmlEscape) $title .Text .Level | safeHTML }}

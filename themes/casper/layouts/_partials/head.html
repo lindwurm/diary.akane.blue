@@ -1,0 +1,61 @@
+{{- $title := partial "func/title.html" . -}}
+{{- $isPost := partial "func/is-post.html" . -}}
+{{- $ogURL := partial "func/og-url.html" . -}}
+{{- if partial "func/is-list.html" . -}}
+  {{- $pager := partial "func/pager.html" . -}}
+  {{- if gt $pager.PageNumber 1 -}}
+    {{- $ogURL = printf "%s%sindex.html" (strings.TrimSuffix "/" site.BaseURL) $pager.URL -}}
+  {{- end -}}
+{{- end -}}
+{{- $suffix := site.Title -}}
+{{- if .IsHome }}{{ $suffix = site.Params.subtitle }}{{ end -}}
+{{- $fullTitle := printf "%s | %s" (or $title site.Title) $suffix -}}
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<title>{{ $fullTitle }}</title>
+
+	<meta name="HandheldFriendly" content="True" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+	<meta name="generator" content="hugo">
+	<meta name="author" content="{{ site.Params.author }}">
+	<meta name="description" content="{{ if $isPost }}{{ .Params.description }}{{ else }}{{ site.Params.description }}{{ end }}">
+
+	{{ with site.Params.keywords -}}
+	<meta name="keywords" content="{{ if $isPost }}{{ $.Params.keywords }}{{ else }}{{ . }}{{ end }}">
+	{{- end }}
+
+	{{ with site.Params.favicon -}}
+	<link rel="shortcut icon" href="{{ . }}">
+	<link rel="apple-touch-icon" href="{{ . }}"/>
+	{{- end }}
+
+	{{ with site.Params.navColor -}}
+	<meta name="theme-color" content="#{{ . }}">
+	<meta name="msapplication-TileColor" content="#{{ . }}">
+	{{- end }}
+
+	{{ with site.Params.rss -}}
+	<link rel="alternate" href="{{ . }}" title="{{ site.Title }}" type="application/atom+xml">
+	{{- end }}
+
+	<meta property="og:site_name" content="{{ site.Title }}">
+	<meta property="og:type" content="{{ if $isPost }}article{{ else }}blog{{ end }}">
+	<meta property="og:title" content="{{ $fullTitle }}">
+	<meta property="og:description" content="{{ if $isPost }}{{ .Params.description }}{{ else }}{{ site.Params.description }}{{ end }}">
+	<meta property="og:url" content="{{ $ogURL }}">
+
+	{{ if $isPost -}}
+	{{- /* 元テーマの書式 'YYYY-MM-DDTHH:MM:SS+08:00' をそのまま再現 (MM=月, SS=1/100秒) */}}
+	<meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:01" }}:00+08:00"/>
+	<meta property="article:author" content="{{ site.Params.author }}">
+	<meta property="article:published_first" content="{{ site.Title }}, {{ .RelPermalink }}" />
+	{{- end }}
+
+	<link rel="stylesheet" href="/css/allinonecss.min.css">
+	<link rel="stylesheet" href="/css/chroma.css">
+
+	<link href="https://maud.io/css/koruri.css" rel="stylesheet">
+	<link href='https://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
+</head>

@@ -1,0 +1,6 @@
+{{- /* config.url + url_for(page.path)。記事以外は末尾に index.html が付く */ -}}
+{{- $url := .Permalink -}}
+{{- if not (partial "func/is-post.html" .) -}}
+  {{- $url = printf "%sindex.html" $url -}}
+{{- end -}}
+{{- return $url -}}

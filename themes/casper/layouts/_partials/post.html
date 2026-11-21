@@ -1,0 +1,53 @@
+{{- /* 文章页 (post.swig) */ -}}
+{{- $posts := partial "func/posts.html" . -}}
+{{- $newer := $posts.Next . -}}
+{{- $older := $posts.Prev . -}}
+<div id="site-main" class="site-main outer" role="main">
+    <div class="inner">
+        <header class="post-full-header">
+            <div class="post-full-meta">
+                <time  class="post-full-meta-date" datetime="{{ partial "func/date-xml.html" .Date }}">
+                    {{ .Date.Format "2006-01-2" }}
+                </time>
+                <span class="date-divider">/</span>
+            </div>
+            <h1 class="post-full-title">{{ .Title }}</h1>
+        </header>
+        <div class="post-full {{ if not .Params.feature_img }}no-image{{ end }}">
+            {{ with .Params.feature_img -}}
+            <figure class="post-full-image" style="background-image: url({{ . }})">
+            </figure>
+            {{- end }}
+            <div class="post-full-content">
+                <article id="photoswipe" class="markdown-body">
+                    {{ partial "func/content.html" . }}
+                </article>
+                <ul class="tags-postTags">
+                    {{ range sort (.GetTerms "tags") "LinkTitle" -}}
+                    <li>
+                        <a href="{{ .RelPermalink }}" rel="tag"># {{ .LinkTitle }}</a>
+                    </li>
+                    {{ end }}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {{/* 在文章底部显示上下篇 */}}
+    <nav id="gobottom" class="pagination">
+        {{ with $newer -}}
+        <a class="prev-post" title="{{ .Title }}" href="{{ .RelPermalink }}">
+            ← {{ .Title }}
+        </a>
+        {{- end }}
+        <span class="prev-next-post">·</span>
+        {{ with $older -}}
+        <a class="next-post" title="{{ .Title }}" href="{{ .RelPermalink }}">
+            {{ .Title }} →
+        </a>
+        {{- end }}
+    </nav>
+</div>
+{{ if site.Params.post_toc -}}
+{{ partial "public/toc.html" . }}
+{{- end }}

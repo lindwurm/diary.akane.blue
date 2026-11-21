@@ -1,0 +1,96 @@
+/*
+ * コードブロックの配色 (Chroma のトークンクラス用)
+ * テーマ既存の highlight.css の色 (keyword: #e96900 / string: #42b983 / number: #ae81ff) を基調にしている。
+ * 背景色・地の文字色はテーマ側の --color-1 / --pre-color のまま。
+ */
+:root {
+  --code-comment: #999999;
+  --code-keyword: #e96900;
+  --code-string: #42b983;
+  --code-number: #ae81ff;
+  --code-builtin: #0092db;
+  --code-tag: #2973b7;
+  --code-variable: #dd4a68;
+  --code-function: #6f42c1;
+  --code-prompt: #e96900;
+  --code-output: #8a8a8a;
+  --code-deleted: #b31d28;
+  --code-deleted-bg: #ffeef0;
+  --code-inserted: #22863a;
+  --code-inserted-bg: #e6ffed;
+  --code-heading: #6f42c1;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --code-comment: #7f848e;
+    --code-keyword: #f0883e;
+    --code-string: #56d39a;
+    --code-number: #c3a6ff;
+    --code-builtin: #4fb3ff;
+    --code-tag: #61afef;
+    --code-variable: #ef6f8c;
+    --code-function: #c678dd;
+    --code-prompt: #f0883e;
+    --code-output: #9da5b4;
+    --code-deleted: #ffa198;
+    --code-deleted-bg: rgba(248, 81, 73, .15);
+    --code-inserted: #7ee787;
+    --code-inserted-bg: rgba(46, 160, 67, .15);
+    --code-heading: #c678dd;
+  }
+}
+
+/* コメント */
+.highlight pre .c, .highlight pre .c1, .highlight pre .cm, .highlight pre .ch,
+.highlight pre .cs, .highlight pre .cp, .highlight pre .cpf { color: var(--code-comment); font-style: italic; }
+
+/* キーワード・定数 */
+.highlight pre .k, .highlight pre .kd, .highlight pre .kn, .highlight pre .kp,
+.highlight pre .kr, .highlight pre .kt, .highlight pre .ow { color: var(--code-keyword); }
+.highlight pre .kc { color: var(--code-number); }
+
+/* 文字列 (YAML の値 .l を含む) */
+.highlight pre .s, .highlight pre .s1, .highlight pre .s2, .highlight pre .sa, .highlight pre .sb,
+.highlight pre .sc, .highlight pre .sd, .highlight pre .sh, .highlight pre .si, .highlight pre .sx,
+.highlight pre .sr, .highlight pre .ss, .highlight pre .dl, .highlight pre .l, .highlight pre .ld { color: var(--code-string); }
+.highlight pre .se { color: var(--code-number); }
+
+/* 数値 */
+.highlight pre .m, .highlight pre .mb, .highlight pre .mf, .highlight pre .mh,
+.highlight pre .mi, .highlight pre .il, .highlight pre .mo { color: var(--code-number); }
+
+/* 名前 */
+.highlight pre .nb, .highlight pre .bp { color: var(--code-builtin); }
+.highlight pre .nt, .highlight pre .na, .highlight pre .nl { color: var(--code-tag); }
+.highlight pre .nv, .highlight pre .vc, .highlight pre .vg, .highlight pre .vi { color: var(--code-variable); }
+.highlight pre .nf, .highlight pre .fm, .highlight pre .nc, .highlight pre .nd { color: var(--code-function); }
+
+/* diff */
+.highlight pre .gd { color: var(--code-deleted); background-color: var(--code-deleted-bg); }
+.highlight pre .gi { color: var(--code-inserted); background-color: var(--code-inserted-bg); }
+.highlight pre .gh, .highlight pre .gu { color: var(--code-heading); font-weight: bold; }
+
+/* 端末 (console): プロンプトを強調し、出力は控えめに */
+.highlight pre .gp { color: var(--code-prompt); font-weight: bold; user-select: none; }
+.highlight pre .go { color: var(--code-output); }
+
+.highlight pre .ge { font-style: italic; }
+.highlight pre .gs { font-weight: bold; }
+.highlight pre .gr, .highlight pre .gt { color: var(--code-deleted); }
+.highlight pre .err { color: inherit; background: none; }
+
+/* 右上の言語ラベル (テーマの bash 用ラベルと揃える) */
+.highlight.console .code:before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px 10px 0;
+  color: #ccc;
+  text-align: right;
+  font-size: 1.4rem;
+  line-height: 15px;
+  height: 15px;
+  font-weight: 600;
+  content: "Shell";
+}
